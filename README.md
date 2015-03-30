@@ -34,16 +34,18 @@ To import the package, use:
 ```
 
 
+### Top-down transformation
+
 To transform all statements in a module once, use:
 
 ```
- (walk-module #:transform-stmt <transformer>)
+ (walk-module <module> #:transform-stmt <transformer>)
 ```
 
 To repeatedly transform the statements in a module until the module stops changing, use:
 
 ```
- (walk-fix #:transform-stmt <transformer>)
+ (walk-fix <module> #:transform-stmt <transformer>)
 ```
 
 A `<transformer>` needs to meet the following specification:
@@ -54,4 +56,19 @@ A `<transformer>` needs to meet the following specification:
 
 That is, a transformer can convert a single statement into several statements.
 
+By default, the transformation is applied top-down.
 
+
+### Bottom-up transformation
+
+To transform statements in a bottom-up fashion, use the `#:transform-stmt/bu`
+parameter instead.
+
+
+
+
+
+TODO
+----
+
+Change `walk-fix` to `walk-module/fix`.

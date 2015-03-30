@@ -606,19 +606,25 @@
   
   (define (walk/fix prog
                     #:transform-expr [transform-expr #f]
+                    #:transform-expr/bu [transform-expr/bu #f]
                     #:transform-stmt [transform-stmt #f]
+                    #:transform-stmt/bu [transform-stmt/bu #f]
                     #:trace-debug [trace-debug? #f]) 
     (when trace-debug?
       (write prog))
     
     (let ([prog* (walk-module prog 
                               #:transform-expr transform-expr
-                              #:transform-stmt transform-stmt)])
+                              #:transform-stmt transform-stmt
+                              #:transform-expr/bu transform-expr/bu
+                              #:transform-stmt/bu transform-stmt/bu)])
       (if (equal? prog* prog)
           prog
           (walk/fix prog*
                     #:transform-expr transform-expr
                     #:transform-stmt transform-stmt
+                    #:transform-expr/bu transform-expr/bu
+                    #:transform-stmt/bu transform-stmt/bu
                     #:trace-debug trace-debug?))))
   
   
