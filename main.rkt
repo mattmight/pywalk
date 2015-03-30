@@ -7,7 +7,7 @@
   (require racket/set)
   (require racket/match)
   (require racket/function)
-  
+    
   ;; Dynamically scope parameters accessible during transformation:
   
   (define loop-scope (make-parameter 'none)) ; may be: 'for 'while 'none
@@ -43,6 +43,7 @@
   ; walk-module : module -> module
   (define (walk-module module
                        #:transform-stmt    [transform-stmt #f] 
+                       #:transform-stmt/bu [transform-stmt/bu #f]
                        #:transform-expr    [transform-expr #f]
                        #:transform-expr/bu [transform-expr/bu #f])
     
@@ -586,9 +587,14 @@
           
           [else (error (format "can't walk stmt: ~s" stmt))]))
       
-      (append prepended-stmts transformed appended-stmts))
-    
-    
+      (define transformed+ (append prepended-stmts transformed appended-stmts))
+      
+      (if (not transform-stmt/bu)
+          transformed+
+          (apply append (map transform-stmt/bu transformed+))))
+
+          
+          
     
     (match module
       [`(Module . ,stmts)
