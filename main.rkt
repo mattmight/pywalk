@@ -672,7 +672,7 @@
            assigned-in-rest
            (apply set-union (map targets-in targets)))]
          
-         [`(AugAssign <expr> <operator> <expr>)
+         [`(AugAssign ,_ ,_ ,_)
           ; AugAssign can't declare variables (technically)
           assigned-in-rest]
          
