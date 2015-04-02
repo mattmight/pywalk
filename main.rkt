@@ -503,7 +503,7 @@
           ; (With [<withitem>*] <stmt>*)
           [`(With ,withitems . ,body)
            (list `(With ,@(map walk-withitem withitems) 
-                        ,@(map walk-stmts body)))]
+                        ,@(walk-stmts body)))]
           
           ; (Raise) 
           [`(Raise)
