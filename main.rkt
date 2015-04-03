@@ -707,7 +707,7 @@
          [`(With [(,exprs ,names) ...] . ,body)
           (set-union 
            assigned-in-rest
-           (for/set ([n names] #:when n) n)
+           (apply set-union0 (map targets-in (filter identity names)))
            (locally-assigned body))]
          
          [`(Raise . ,_)
