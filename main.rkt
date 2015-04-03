@@ -629,6 +629,12 @@
   
   
   (define (locally-assigned stmts)
+
+    (define (set-union0 . sets)
+      (if (null? sets)
+        (set)
+        (apply set-union sets)))
+
     (cond
       [(null? stmts)  (set)]
       [else
@@ -641,8 +647,8 @@
          (match target-expr
            [`(Name ,name)               (set name)]
            [`(Starred ,target)          (targets-in target)]
-           [`(Tuple . ,targets)         (apply set-union (map targets-in targets))]
-           [`(List . ,targets)          (apply set-union (map targets-in targets))]
+           [`(Tuple . ,targets)         (apply set-union0 (map targets-in targets))]
+           [`(List . ,targets)          (apply set-union0 (map targets-in targets))]
            [`(Attribute ,_ ,_)          (set)]
            [`(Subscript ,_ ,_)          (set)]
            
