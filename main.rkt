@@ -12,7 +12,8 @@
   
   (define loop-scope (make-parameter 'none)) ; may be: 'for 'while 'none
   (define var-scope (make-parameter 'global)) ; may be: 'global 'def 'class 
-  (define local-vars (make-parameter (set))) ; set of vars defined locally in this scope
+  (define local-vars (make-parameter (set))) ; set of vars defined locally in this scope; from Local
+  (define exception-var (make-parameter #f)) ; name of exception variable currently in scope
   
   
   ;; Auxiliary functions
@@ -400,7 +401,8 @@
              `(except ,(walk-expr exn) #f ,@(walk-stmts body))]
             
             [`(except ,exn ,id . ,body)
-             `(except ,(walk-expr exn) ,id ,@(walk-stmts body))]
+             (parameterize ([exception-var id])
+               `(except ,(walk-expr exn) ,id ,@(walk-stmts body)))]
             
             [else (error "can't walk handler: ~s" handler)])))
       
