@@ -606,7 +606,7 @@
   
   
   
-  (define (walk/fix prog
+  (define (walk-module/fix prog
                     #:transform-expr [transform-expr #f]
                     #:transform-expr/bu [transform-expr/bu #f]
                     #:transform-stmt [transform-stmt #f]
@@ -622,12 +622,15 @@
                               #:transform-stmt/bu transform-stmt/bu)])
       (if (equal? prog* prog)
           prog
-          (walk/fix prog*
+          (walk-module/fix prog*
                     #:transform-expr transform-expr
                     #:transform-stmt transform-stmt
                     #:transform-expr/bu transform-expr/bu
                     #:transform-stmt/bu transform-stmt/bu
                     #:trace-debug trace-debug?))))
+  
+  
+  (define walk/fix walk-module/fix)
   
   
   (define (locally-assigned stmts)
