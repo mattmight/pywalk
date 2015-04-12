@@ -210,7 +210,7 @@
             [else (error (format "can't walk arguments: ~s" args))]))
         
         (when (and transform-expr expr)
-          (set! expr (transform-expr expr prepend! append!)))
+          (set! expr (transform-expr expr)))
         
         (define 
           expr+
@@ -359,8 +359,8 @@
             [else (error (format "don't know how to walk-expr: ~s" expr))]))
         
         (if (and transform-expr/bu expr+)
-            (transform-expr/bu expr+ prepend! append!)
-            expr+))    
+            (transform-expr/bu expr+)
+            expr+))
       
       
       ; walk-exprs : list[expr] -> list[expr]
