@@ -1,5 +1,10 @@
 (module pywalk racket/base
   
+  ; TODO/Cleanup:
+  
+  ; + Get rid of append!/prepend!
+
+  
   ; A module for walking over and transforming python ASTs.
   
   (provide (all-defined-out))
@@ -38,6 +43,18 @@
   
   (define (assign var expr)
     `(Assign (targets ,var) (value ,expr)))
+  
+  ;; Compose transformations:
+  
+  ; compose-transform-stmt : (stmt -> stmt*) (stmt -> stmt*) -> (stmt -> stmt*)
+  (define (compose-transform-stmt . transformers)
+    (lambda (stmt)
+      (match transformers
+        [(list tx)         tx]
+        [(list tx1 tx2)    (apply append (map tx1 (tx2 stmt)))]
+        [(cons tx rest)    (compose-transform-stmt tx (apply compose-transform-stmt rest))])))
+                                              
+  
   
   ;; Transformations
   
