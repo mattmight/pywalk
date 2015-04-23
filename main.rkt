@@ -49,12 +49,13 @@
   ; compose-transform-stmt : (stmt -> stmt*) (stmt -> stmt*) -> (stmt -> stmt*)
   (define (compose-transform-stmt . transformers)
     (lambda (stmt)
-      (match transformers
-        [(list tx)         tx]
-        [(list tx1 tx2)    (apply append (map tx1 (tx2 stmt)))]
-        [(cons tx rest)    (compose-transform-stmt tx (apply compose-transform-stmt rest))])))
-                                              
-  
+     (if (null? transformers)
+         (list stmt)
+         (apply append
+                (map (car transformers)
+                     ((apply compose-transform-stmt
+                             (cdr transformers))
+                      stmt))))))
   
   ;; Transformations
   
