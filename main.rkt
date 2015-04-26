@@ -3,7 +3,6 @@
   ; TODO/Cleanup:
   
   ; + Get rid of append!/prepend!
-
   
   ; A module for walking over and transforming python ASTs.
   
@@ -19,16 +18,44 @@
   (define var-scope (make-parameter 'global)) ; may be: 'global 'def 'class 
   (define local-vars (make-parameter (set))) ; set of vars defined locally in this scope; from Local
   (define exception-var (make-parameter #f)) ; name of exception variable currently in scope
-  
-  
+  (define tmp-index (make-parameter 'unset)) ; the next index for a temporary variable
+
+  (define *tmp-prefix* "_tmp_")
+  (define *tmp-re* 
+   (pregexp (format "~a(\\d+)" *tmp-prefix*)))
+
+  (define (tmp-initialized?)
+   (not (equal? (tmp-index) 'unset)))
+
+  (define (tmp-symbol? s)
+   (regexp-match? *tmp-re* (symbol->string s)))
+
+  (define (tmp-symbol-index s)
+   (string->number
+    (cadr (regexp-match *tmp-re* (symbol->string s)))))
+
+  (define (set-tmp-index-to-max! s-exp)
+   (match s-exp
+    [(? list? l) (map set-tmp-index-to-max! l)]
+    [(? symbol? (? tmp-symbol?) s)
+     (let ([index (tmp-symbol-index s)])
+      (if (or (not (tmp-initialized?)) (> index (tmp-index)))
+          (tmp-index index)
+          (void)))]
+    [else (void)]))
+
+  (define (tmp-index-initialize! s-exp)
+   (set-tmp-index-to-max! s-exp)
+   (when (not (tmp-initialized?))
+    (tmp-index 0)))
+
   ;; Auxiliary functions
   
-  ;;; Generate a temporary name:
-  (define tmp-index 0)
-  
   (define (tmp)
-    (set! tmp-index (+ 1 tmp-index))
-    (string->symbol (format "_tmp_~a" tmp-index)))
+    (when (not (tmp-initialized?)) 
+          (error "tmp-index unset!"))
+    (tmp-index (+ 1 (tmp-index)))
+    (string->symbol (format "~a~a" *tmp-prefix* (tmp-index))))
   
   (define (tmp-name)
     `(Name ,(tmp)))
@@ -65,6 +92,9 @@
                        #:transform-stmt/bu [transform-stmt/bu #f]
                        #:transform-expr    [transform-expr #f]
                        #:transform-expr/bu [transform-expr/bu #f])
+
+   (when (not (tmp-initialized?)) 
+         (tmp-index-initialize! module))
     
     ; walk-stmts : stmt* -> stmt*
     (define (walk-stmts stmts)
