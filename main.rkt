@@ -11,6 +11,8 @@
   (require racket/set)
   (require racket/match)
   (require racket/function)
+
+  (require racket/pretty)
     
   ;; Dynamically scope parameters accessible during transformation:
   
@@ -661,7 +663,12 @@
                     #:transform-stmt/bu [transform-stmt/bu #f]
                     #:trace-debug [trace-debug? #f]) 
     (when trace-debug?
-      (write prog))
+      (display "; *** BEGIN DEBUG TRACE ***")
+      (newline)
+      (pretty-write prog)
+      (display "; *** END DEBUG TRACE ***")
+      (newline)
+      (newline))
     
     (let ([prog* (walk-module prog 
                               #:transform-expr transform-expr
